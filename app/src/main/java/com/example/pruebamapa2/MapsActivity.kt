@@ -61,7 +61,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         if(isPermissionsGranted()){
             mMap.isMyLocationEnabled = true
         } else{
+            requestLocationPermission()
+        }
+    }
 
+    /**
+     * Función para solicitar permisos
+     */
+    companion object{
+        //Para saber si es nuestro permiso el aceptado
+        const val REQUEST_CODE_LOCATION = 0
+    }
+
+    private fun requestLocationPermission(){
+        //Si entra en if es que se han rechazado los permisos
+        if(ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            )){
+            Toast.makeText(
+                this,
+                "Please go to settings and accept the permissions",
+                Toast.LENGTH_SHORT
+
+            ).show()
+        }else{
+            //Si entra en el else, significa que nunca se pidieron permisos
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_CODE_LOCATION
+            )
         }
     }
 
