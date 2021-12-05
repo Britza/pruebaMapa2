@@ -56,11 +56,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * Función para comprobar si se ha iniciado el Mapa
      */
     @SuppressLint("MissingPermission")
-    private fun enableMyLocation(){
-        if(!::mMap.isInitialized) return
-        if(isPermissionsGranted()){
+    private fun enableMyLocation() {
+        if (!::mMap.isInitialized) return
+        if (isPermissionsGranted()) {
             mMap.isMyLocationEnabled = true
-        } else{
+        } else {
             requestLocationPermission()
         }
     }
@@ -68,24 +68,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
      * Función para solicitar permisos
      */
-    companion object{
+    companion object {
         //Para saber si es nuestro permiso el aceptado
         const val REQUEST_CODE_LOCATION = 0
     }
 
-    private fun requestLocationPermission(){
+    private fun requestLocationPermission() {
         //Si entra en if es que se han rechazado los permisos
-        if(ActivityCompat.shouldShowRequestPermissionRationale(
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
-            )){
+            )
+        ) {
             Toast.makeText(
                 this,
                 "Please go to settings and accept the permissions",
                 Toast.LENGTH_SHORT
 
             ).show()
-        }else{
+        } else {
             //Si entra en el else, significa que nunca se pidieron permisos
             ActivityCompat.requestPermissions(
                 this,
@@ -93,6 +94,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 REQUEST_CODE_LOCATION
             )
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ){
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode){
+            REQUEST_CODE_LOCATION -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                mMap.isMyLocationEnabled = true
+            }else {
+                Toast.makeText(
+                    this,
+                    "To activate the location go to settings and accept the permissions",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            else ->{}
+        }
+    }
+
+    /**
+     * Función para que no rompa la app
+     */
+    @SuppressLint("MissingPermission")
+    override fun onResumeFragments() {
+        super.onResumeFragments()
+        //Si el mapa ha sido creado
+        if(!::mMap.isInitialized) return
+        //Si los permisos esta activos
+        if(!isPermissionsGranted()){
+            //En caso de no ser así, desactivamos localización en tiempo real
+            mMap.isMyLocationEnabled = false
+            Toast.makeText(
+                this,
+                "To activate the location go to settings and accept the permissions",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
     }
 
 }
