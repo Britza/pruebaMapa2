@@ -40,8 +40,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.uiSettings.isZoomControlsEnabled = true
-        
+        enableMyLocation()
     }
 
+    /**
+     * Función para comprobar permiso de localización
+     */
+    private fun isPermissionsGranted() = ContextCompat.checkSelfPermission(
+        this,
+        android.Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED //Para saber si los permisos estan activados o no
+
+
+    /**
+     * Función para comprobar si se ha iniciado el Mapa
+     */
+    @SuppressLint("MissingPermission")
+    private fun enableMyLocation(){
+        if(!::mMap.isInitialized) return
+        if(isPermissionsGranted()){
+            mMap.isMyLocationEnabled = true
+        } else{
+
+        }
+    }
 
 }
